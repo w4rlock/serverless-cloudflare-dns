@@ -10,14 +10,25 @@ class ServerlessCloudFlarePlugin {
     this.serverless = serverless;
     this.options = options;
 
+    let disabled = this.getConfValue('cloudflare.disabled', false);
+    if (disabled == 'true') {
+      this.log('plugin disabled');
+      return;
+    }
+
     this.hooks = {
       'after:deploy:deploy': this.createRecordIfNeed.bind(this),
       'before:remove:remove': this.removeRecordIfNeed.bind(this),
       'cloudflare-deploy:deploy': this.createRecordIfNeed.bind(this),
+      'cloudflare-update:deploy': this.updateRecord.bind(this),
       'cloudflare-remove:remove': this.removeRecordIfNeed.bind(this)
     }
 
     this.commands = {
+      'cloudflare-update': {
+        usage: 'update a record set',
+        lifecycleEvents: ['deploy']
+      },
       'cloudflare-deploy': {
         usage: 'deploy a record set',
         lifecycleEvents: ['deploy']
@@ -70,14 +81,25 @@ class ServerlessCloudFlarePlugin {
 
 
   initialize() {
-    this.cfg = { auth: {}, record: {}};
+    const auth = {}, record = {}
+    this.cfg = {};
     this.cfg.domain = this.getConfValue('cloudflare.domain');
-    this.cfg.auth.email = this.getConfValue('cloudflare.auth.email');
-    this.cfg.auth.token = this.getConfValue('cloudflare.auth.token');
-    this.cfg.record.name = this.getConfValue('cloudflare.record.name');
-    this.cfg.record.content = this.getConfValue('cloudflare.record.content');
-    this.cfg.record.type = this.getConfValue('cloudflare.record.type', false, 'CNAME');
 
+    auth.email = this.getConfValue('cloudflare.auth.email');
+    auth.token = this.getConfValue('cloudflare.auth.token');
+
+    record.name = this.getConfValue('cloudflare.record.name');
+    record.content = this.getConfValue('cloudflare.record.content');
+
+    // OPTIONALS FIELDS
+    record.type = this.getConfValue('cloudflare.record.type', false, 'CNAME');
+    record.proxied = this.getConfValue('cloudflare.record.proxied', false);
+    record.proxiable = this.getConfValue('cloudflare.record.proxiable', false);
+    record.priority = this.getConfValue('cloudflare.record.priority', false);
+    record.ttl = this.getConfValue('cloudflare.record.ttl', false);
+
+    this.cfg.auth = auth;
+    this.cfg.record = record;
     this.CloudFlareApi = new CloudFlare(this.cfg.auth.email, this.cfg.auth.token);
   }
 
@@ -89,7 +111,7 @@ class ServerlessCloudFlarePlugin {
     this.initialize();
     const { domain } = this.cfg;
 
-    this.log('Checking or create record set');
+    this.log('Creating new record set');
     const res = await this.CloudFlareApi.createDnsRecord(domain, this.cfg.record)
     this.log(res);
   }
@@ -100,8 +122,19 @@ class ServerlessCloudFlarePlugin {
     this.initialize();
     const { domain } = this.cfg;
 
-    this.log('Checking or remove record set');
+    this.log('Removing record set');
     const record = await this.CloudFlareApi.removeDnsRecord(domain, this.cfg.record)
+
+    this.log(record);
+  }
+
+
+  async updateRecord() {
+    this.initialize();
+    const { domain } = this.cfg;
+
+    this.log('Updating record set');
+    const record = await this.CloudFlareApi.updateDnsRecord(domain, this.cfg.record)
 
     this.log(record);
   }
