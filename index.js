@@ -11,7 +11,7 @@ class ServerlessCloudFlarePlugin {
     this.options = options;
 
     this.hooks = {
-      'after:deploy:validate': this.createRecordIfNeed.bind(this),
+      'after:deploy:deploy': this.createRecordIfNeed.bind(this),
       'before:remove:remove': this.removeRecordIfNeed.bind(this),
       'cloudflare-deploy:deploy': this.createRecordIfNeed.bind(this),
       'cloudflare-remove:remove': this.removeRecordIfNeed.bind(this)
