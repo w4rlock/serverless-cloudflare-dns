@@ -19,23 +19,20 @@ class ServerlessCloudFlarePlugin {
     this.hooks = {
       'after:deploy:deploy': this.createRecordIfNeed.bind(this),
       'before:remove:remove': this.removeRecordIfNeed.bind(this),
-      'cloudflare-deploy:deploy': this.createRecordIfNeed.bind(this),
-      'cloudflare-update:deploy': this.updateRecord.bind(this),
-      'cloudflare-remove:remove': this.removeRecordIfNeed.bind(this)
+      'cloudflare:deploy:deploy': this.createRecordIfNeed.bind(this),
+      'cloudflare:update:update': this.updateRecord.bind(this),
+      'cloudflare:remove:remove': this.removeRecordIfNeed.bind(this)
     }
 
     this.commands = {
-      'cloudflare-update': {
-        usage: 'update a record set',
-        lifecycleEvents: ['deploy']
-      },
-      'cloudflare-deploy': {
-        usage: 'deploy a record set',
-        lifecycleEvents: ['deploy']
-      },
-      'cloudflare-remove': {
-        usage: 'remove a record set',
-        lifecycleEvents: ['remove']
+      cloudflare: {
+        usage: 'cloud flare abm - record set',
+        lifecycleEvents: ['deploy', 'remove', 'update'],
+        commands: {
+          deploy:{ usage: 'create new record set', lifecycleEvents: ['deploy']},
+          remove:{ usage: 'remove new record set', lifecycleEvents: ['remove']},
+          update:{ usage: 'update new record set', lifecycleEvents: ['update']}
+        }
       }
     }
   }
