@@ -6,6 +6,12 @@ const CloudFlare = require('./lib/CloudFlare');
 const LOG_PREFFIX = '[ServerlessCloudFlare] - ';
 
 class ServerlessCloudFlarePlugin {
+  /**
+   * Default serverless constructor
+   *
+   * @param {object} serverless serverless instance
+   * @param {object} options command line arguments
+   */
   constructor(serverless, options) {
     this.serverless = serverless;
     this.options = options;
@@ -40,8 +46,9 @@ class ServerlessCloudFlarePlugin {
 
 
   /**
-   * Log to console
-   * @param msg:string message to log
+   * Log to stdout
+   *
+   * @param {object|string} entity to log
    */
   log(entity) {
     this.serverless.cli.log(
@@ -51,6 +58,14 @@ class ServerlessCloudFlarePlugin {
 
 
 
+  /**
+   * Get multiprovider configuration
+   *
+   * @param {string} key configuration key
+   * @param {boolean} required=true if value is false throw a error
+   * @param {string|object} default_value=undefined default value to return
+   * @returns {string} configuration value
+   */
   getConfValue(key, required = true, default_value = undefined) {
     const fromEnv =    k => process.env[k];
     const fromCmdArg = k => this.options[k];
