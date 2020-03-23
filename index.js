@@ -22,6 +22,8 @@ class ServerlessCloudFlarePlugin {
       return;
     }
 
+
+
     this.hooks = {
       'after:deploy:deploy': this.createRecordIfNeed.bind(this),
       'after:remove:remove': this.removeRecordIfNeed.bind(this),
@@ -29,6 +31,8 @@ class ServerlessCloudFlarePlugin {
       'cloudflare:update:update': this.updateRecord.bind(this),
       'cloudflare:remove:remove': this.removeRecordIfNeed.bind(this)
     }
+
+
 
     this.commands = {
       cloudflare: {
@@ -62,14 +66,14 @@ class ServerlessCloudFlarePlugin {
    * Get multiprovider configuration
    *
    * @param {string} key configuration key
-   * @param {boolean} required=true if value is false throw a error
+   * @param {boolean} required=true if value is null throw a error
    * @param {string|object} default_value=undefined default value to return
    * @returns {string} configuration value
    */
   getConfValue(key, required = true, default_value = undefined) {
-    const fromEnv =    k => process.env[k];
-    const fromCmdArg = k => this.options[k];
-    const fromYaml =   k => _.get(this.serverless, `service.custom.${k}`);
+    const fromEnv =    ( k ) => process.env[k];
+    const fromCmdArg = ( k ) => this.options[k];
+    const fromYaml =   ( k ) => _.get(this.serverless, `service.custom.${k}`);
 
     let k = key.replace(/\./g, '-');
     let val = fromCmdArg(k);
@@ -92,6 +96,10 @@ class ServerlessCloudFlarePlugin {
 
 
 
+  /**
+   * Initialize variables
+   *
+   */
   initialize() {
     const auth = {}, record = {}
     this.cfg = {};
@@ -119,6 +127,11 @@ class ServerlessCloudFlarePlugin {
 
 
 
+  /**
+   * Create a new cloudflare record if not exist (check for cname to validate)
+   *
+   * @returns {record} cloudflare object record
+   */
   async createRecordIfNeed() {
     this.initialize();
     const { domain } = this.cfg;
