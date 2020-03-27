@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.1.3...0.1.4) (2020-03-27)
+
+
+### Bug Fixes
+
+* npmignore add commitlint ([963ab2f](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/963ab2fb9018b48d253349fed5eea922a0e57762))
+
 ### [0.1.3](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.1.2...0.1.3) (2020-03-27)
 
 
