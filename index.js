@@ -1,7 +1,5 @@
-'use strict';
-
 const _ = require('lodash');
-const CloudFlare = require('./lib/CloudFlare');
+const CloudFlare = require('./lib/cloudflare');
 
 const LOG_PREFFIX = '[ServerlessCloudFlare] - ';
 
@@ -16,7 +14,7 @@ class ServerlessCloudFlarePlugin {
     this.serverless = serverless;
     this.options = options;
 
-    let disabled = this.getConfValue('cloudflare.disabled', false);
+    const disabled = this.getConfValue('cloudflare.disabled', false);
     if (disabled) {
       this.log('plugin disabled');
       return;
@@ -28,12 +26,13 @@ class ServerlessCloudFlarePlugin {
       'cloudflare:deploy:deploy': this.createRecordIfNeed.bind(this),
       'cloudflare:update:update': this.updateRecord.bind(this),
       'cloudflare:remove:remove': this.removeRecordIfNeed.bind(this),
+      'cloudflare:list:list': this.listRecord.bind(this),
     };
 
     this.commands = {
       cloudflare: {
         usage: 'cloud flare abm - record set',
-        lifecycleEvents: ['deploy', 'remove', 'update'],
+        lifecycleEvents: ['deploy', 'remove', 'update', 'list'],
         commands: {
           deploy: {
             usage: 'create new record set',
@@ -46,6 +45,10 @@ class ServerlessCloudFlarePlugin {
           update: {
             usage: 'update new record set',
             lifecycleEvents: ['update'],
+          },
+          list: {
+            usage: 'list record set',
+            lifecycleEvents: ['list'],
           },
         },
       },
@@ -68,10 +71,10 @@ class ServerlessCloudFlarePlugin {
    *
    * @param {string} key configuration key
    * @param {boolean} required=true if value is null throw a error
-   * @param {string|object} default_value=undefined default value to return
+   * @param {string|object} defaultValue=undefined default value to return
    * @returns {string} configuration value
    */
-  getConfValue(key, required = true, default_value = undefined) {
+  getConfValue(key, required = true, defaultValue = undefined) {
     const fromEnv = (k) => process.env[k];
     const fromCmdArg = (k) => this.options[k];
     const fromYaml = (k) => _.get(this.serverless, `service.custom.${k}`);
@@ -88,11 +91,11 @@ class ServerlessCloudFlarePlugin {
     val = fromYaml(k);
     if (val) return val;
 
-    if (required && !default_value) {
+    if (required && !defaultValue) {
       throw new Error(`property value for ${key} is missing.`);
     }
 
-    return default_value;
+    return defaultValue;
   }
 
   /**
@@ -100,8 +103,8 @@ class ServerlessCloudFlarePlugin {
    *
    */
   initialize() {
-    const auth = {},
-      record = {};
+    const auth = {};
+    const record = {};
     this.cfg = {};
     this.cfg.domain = this.getConfValue('cloudflare.domain');
 
@@ -133,40 +136,61 @@ class ServerlessCloudFlarePlugin {
    */
   async createRecordIfNeed() {
     this.initialize();
-    const { domain } = this.cfg;
 
     this.log('Creating new record set');
     const res = await this.CloudFlareApi.createDnsRecord(
-      domain,
+      this.cfg.domain,
       this.cfg.record
     );
+
     this.log(res);
   }
 
+  /**
+   * Remove cloud flare record set based on cname field to remove
+   *
+   */
   async removeRecordIfNeed() {
     this.initialize();
-    const { domain } = this.cfg;
 
     this.log('Removing record set');
     const record = await this.CloudFlareApi.removeDnsRecord(
-      domain,
+      this.cfg.domain,
       this.cfg.record
     );
 
     this.log(record);
   }
 
+  /**
+   * Update cloud flare record set based on cname field to update
+   *
+   */
   async updateRecord() {
     this.initialize();
-    const { domain } = this.cfg;
 
     this.log('Updating record set');
     const record = await this.CloudFlareApi.updateDnsRecord(
-      domain,
+      this.cfg.domain,
       this.cfg.record
     );
 
     this.log(record);
+  }
+
+  /**
+   * List records
+   *
+   */
+  async listRecord() {
+    this.initialize();
+
+    this.log('Listing record set');
+
+    const q = {};
+    const records = await this.CloudFlareApi.listDnsRecord(this.cfg.domain, q);
+
+    this.log(records);
   }
 }
 

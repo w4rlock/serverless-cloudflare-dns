@@ -1,0 +1,21 @@
+service: test-cloudflare-plugin
+
+provider:
+  name: aws
+
+
+plugins:
+  modules:
+    - ./index.js
+
+custom:
+  cloudflare:
+    disabled: false
+    domain: "" # from env
+    auth:
+      email: "" # from env
+      token: "" # from env
+
+    record:
+      name: ""
+      content: ""

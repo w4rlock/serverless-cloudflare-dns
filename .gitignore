@@ -1,1 +1,7 @@
+*.log
+.env
+
+test
+coverage
+.serverless/*
 node_modules/*

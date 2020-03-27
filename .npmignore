@@ -1,15 +1,16 @@
+.env
 .eslintrc
 .eslintignore
 .prettierrc
 
-.lintstagedrc.json
 .editorconfig
+.lintstagedrc.json
 
 serverless.yml
 
 test
 coverage
-.serverless
+.serverless/*
 node_modules/*
 
 .git/*
