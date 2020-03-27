@@ -5,7 +5,7 @@ const LOG_PREFFIX = '[ServerlessCloudFlare] - ';
 
 class ServerlessCloudFlarePlugin {
   /**
-   * Default serverless constructor
+   * Serverless plugin constructor
    *
    * @param {object} serverless serverless instance
    * @param {object} options command line arguments
