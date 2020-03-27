@@ -17,37 +17,40 @@ class ServerlessCloudFlarePlugin {
     this.options = options;
 
     let disabled = this.getConfValue('cloudflare.disabled', false);
-    if (disabled == 'true') {
+    if (disabled) {
       this.log('plugin disabled');
       return;
     }
-
-
 
     this.hooks = {
       'after:deploy:deploy': this.createRecordIfNeed.bind(this),
       'after:remove:remove': this.removeRecordIfNeed.bind(this),
       'cloudflare:deploy:deploy': this.createRecordIfNeed.bind(this),
       'cloudflare:update:update': this.updateRecord.bind(this),
-      'cloudflare:remove:remove': this.removeRecordIfNeed.bind(this)
-    }
-
-
+      'cloudflare:remove:remove': this.removeRecordIfNeed.bind(this),
+    };
 
     this.commands = {
       cloudflare: {
         usage: 'cloud flare abm - record set',
         lifecycleEvents: ['deploy', 'remove', 'update'],
         commands: {
-          deploy:{ usage: 'create new record set', lifecycleEvents: ['deploy']},
-          remove:{ usage: 'remove new record set', lifecycleEvents: ['remove']},
-          update:{ usage: 'update new record set', lifecycleEvents: ['update']}
-        }
-      }
-    }
+          deploy: {
+            usage: 'create new record set',
+            lifecycleEvents: ['deploy'],
+          },
+          remove: {
+            usage: 'remove new record set',
+            lifecycleEvents: ['remove'],
+          },
+          update: {
+            usage: 'update new record set',
+            lifecycleEvents: ['update'],
+          },
+        },
+      },
+    };
   }
-
-
 
   /**
    * Log to stdout
@@ -60,8 +63,6 @@ class ServerlessCloudFlarePlugin {
     );
   }
 
-
-
   /**
    * Get multiprovider configuration
    *
@@ -71,9 +72,9 @@ class ServerlessCloudFlarePlugin {
    * @returns {string} configuration value
    */
   getConfValue(key, required = true, default_value = undefined) {
-    const fromEnv =    ( k ) => process.env[k];
-    const fromCmdArg = ( k ) => this.options[k];
-    const fromYaml =   ( k ) => _.get(this.serverless, `service.custom.${k}`);
+    const fromEnv = (k) => process.env[k];
+    const fromCmdArg = (k) => this.options[k];
+    const fromYaml = (k) => _.get(this.serverless, `service.custom.${k}`);
 
     let k = key.replace(/\./g, '-');
     let val = fromCmdArg(k);
@@ -88,20 +89,19 @@ class ServerlessCloudFlarePlugin {
     if (val) return val;
 
     if (required && !default_value) {
-      throw new Error(`property value for ${key} is missing.`)
+      throw new Error(`property value for ${key} is missing.`);
     }
 
     return default_value;
   }
-
-
 
   /**
    * Initialize variables
    *
    */
   initialize() {
-    const auth = {}, record = {}
+    const auth = {},
+      record = {};
     this.cfg = {};
     this.cfg.domain = this.getConfValue('cloudflare.domain');
 
@@ -120,12 +120,11 @@ class ServerlessCloudFlarePlugin {
 
     this.cfg.auth = auth;
     this.cfg.record = record;
-    this.CloudFlareApi = new CloudFlare(this.cfg.auth.email, this.cfg.auth.token);
+    this.CloudFlareApi = new CloudFlare(
+      this.cfg.auth.email,
+      this.cfg.auth.token
+    );
   }
-
-
-
-
 
   /**
    * Create a new cloudflare record if not exist (check for cname to validate)
@@ -137,33 +136,38 @@ class ServerlessCloudFlarePlugin {
     const { domain } = this.cfg;
 
     this.log('Creating new record set');
-    const res = await this.CloudFlareApi.createDnsRecord(domain, this.cfg.record)
+    const res = await this.CloudFlareApi.createDnsRecord(
+      domain,
+      this.cfg.record
+    );
     this.log(res);
   }
-
-
 
   async removeRecordIfNeed() {
     this.initialize();
     const { domain } = this.cfg;
 
     this.log('Removing record set');
-    const record = await this.CloudFlareApi.removeDnsRecord(domain, this.cfg.record)
+    const record = await this.CloudFlareApi.removeDnsRecord(
+      domain,
+      this.cfg.record
+    );
 
     this.log(record);
   }
-
 
   async updateRecord() {
     this.initialize();
     const { domain } = this.cfg;
 
     this.log('Updating record set');
-    const record = await this.CloudFlareApi.updateDnsRecord(domain, this.cfg.record)
+    const record = await this.CloudFlareApi.updateDnsRecord(
+      domain,
+      this.cfg.record
+    );
 
     this.log(record);
   }
 }
-
 
 module.exports = ServerlessCloudFlarePlugin;

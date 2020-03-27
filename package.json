@@ -4,7 +4,25 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ./",
+    "precommit": "lint-staged",
+    "lint:fix": "eslint ./ --fix",
+    "prettier": "prettier \"**/*.{js,jsx,css,json}\"",
+    "prettier:fix": "prettier \"**/*.{js,jsx,css,json}\" --write",
+    "format": "npm run prettier -- --write",
+    "validate": "npm run prettier -- --list-different && npm run lint",
+    "release": "standard-version -t ''",
+    "release:major": "npm run release -- --release-as major",
+    "release:minor": "npm run release -- --release-as minor",
+    "release:patch": "npm run release -- --release-as patch",
+    "unpublish": "npx force-unpublish serverless-datadog-core-plug 'npmrc remove plugin'"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "npm run lint"
+    }
   },
   "repository": {
     "type": "git",
@@ -20,5 +38,19 @@
     "cloudflare": "^2.7.0",
     "lodash": "^4.17.15",
     "ramda": "^0.27.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.19.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
+    "prettier": "^2.0.1",
+    "standard-version": "^7.1.0"
   }
 }
