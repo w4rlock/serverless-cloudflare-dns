@@ -55,9 +55,8 @@ class ServerlessCloudFlarePlugin {
    * @param {function} funAction serverless plugin action
    */
   async actionw(funAction) {
-    const disabled = this.getConfValue('cloudflare.disabled', false);
-
-    if (disabled) {
+    const disabled = this.getConfValue('cloudflare.disabled', false, false);
+    if ((_.isBoolean(disabled) && disabled) || disabled === 'true') {
       this.log('plugin is disabled');
       return;
     }
