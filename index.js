@@ -14,19 +14,13 @@ class ServerlessCloudFlarePlugin {
     this.serverless = serverless;
     this.options = options;
 
-    const disabled = this.getConfValue('cloudflare.disabled', false);
-    if (disabled) {
-      this.log('plugin disabled');
-      return;
-    }
-
     this.hooks = {
-      'after:deploy:deploy': this.createRecordIfNeed.bind(this),
-      'after:remove:remove': this.removeRecordIfNeed.bind(this),
-      'cloudflare:deploy:deploy': this.createRecordIfNeed.bind(this),
-      'cloudflare:update:update': this.updateRecord.bind(this),
-      'cloudflare:remove:remove': this.removeRecordIfNeed.bind(this),
-      'cloudflare:list:list': this.listRecord.bind(this),
+      'after:deploy:deploy': this.actionw.bind(this, this.create),
+      'after:remove:remove': this.actionw.bind(this, this.remove),
+      'cloudflare:deploy:deploy': this.actionw.bind(this, this.create),
+      'cloudflare:update:update': this.actionw.bind(this, this.update),
+      'cloudflare:remove:remove': this.actionw.bind(this, this.remove),
+      'cloudflare:list:list': this.actionw.bind(this, this.list),
     };
 
     this.commands = {
@@ -53,6 +47,23 @@ class ServerlessCloudFlarePlugin {
         },
       },
     };
+  }
+
+  /**
+   * actionw
+   *
+   * @param {function} funAction serverless plugin action
+   */
+  async actionw(funAction) {
+    const disabled = this.getConfValue('cloudflare.disabled', false);
+
+    if (disabled) {
+      this.log('plugin is disabled');
+      return;
+    }
+
+    this.initialize();
+    await funAction.call(this);
   }
 
   /**
@@ -105,6 +116,7 @@ class ServerlessCloudFlarePlugin {
   initialize() {
     const auth = {};
     const record = {};
+
     this.cfg = {};
     this.cfg.domain = this.getConfValue('cloudflare.domain');
 
@@ -134,9 +146,7 @@ class ServerlessCloudFlarePlugin {
    *
    * @returns {record} cloudflare object record
    */
-  async createRecordIfNeed() {
-    this.initialize();
-
+  async create() {
     this.log('Creating new record set');
     const res = await this.CloudFlareApi.createDnsRecord(
       this.cfg.domain,
@@ -150,9 +160,7 @@ class ServerlessCloudFlarePlugin {
    * Remove cloud flare record set based on cname field to remove
    *
    */
-  async removeRecordIfNeed() {
-    this.initialize();
-
+  async remove() {
     this.log('Removing record set');
     const record = await this.CloudFlareApi.removeDnsRecord(
       this.cfg.domain,
@@ -166,9 +174,7 @@ class ServerlessCloudFlarePlugin {
    * Update cloud flare record set based on cname field to update
    *
    */
-  async updateRecord() {
-    this.initialize();
-
+  async update() {
     this.log('Updating record set');
     const record = await this.CloudFlareApi.updateDnsRecord(
       this.cfg.domain,
@@ -182,9 +188,7 @@ class ServerlessCloudFlarePlugin {
    * List records
    *
    */
-  async listRecord() {
-    this.initialize();
-
+  async list() {
     this.log('Listing record set');
 
     const q = {};

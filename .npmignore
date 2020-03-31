@@ -2,6 +2,8 @@
 .eslintrc
 .eslintignore
 .prettierrc
+.env.example.sh
+CHANGELOG.md
 
 .editorconfig
 .lintstagedrc.json
