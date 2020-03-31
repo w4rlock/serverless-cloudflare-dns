@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.1.5...0.1.6) (2020-03-31)
+
+
+### Bug Fixes
+
+* plugin disabled in commands.. show friendly message ([c2d67fb](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/c2d67fb1aedd49fee41ac7af9d4458693a789962))
+
 ### [0.1.5](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.1.4...0.1.5) (2020-03-27)
 
 
