@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.1.7...0.1.8) (2020-04-01)
+
+
+### Bug Fixes
+
+* add proxied in true by default ([7cdf24d](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/7cdf24df33bd0b3cf31a9358ddd00df4c0e43347))
+
 ### [0.1.7](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.1.6...0.1.7) (2020-03-31)
 
 
