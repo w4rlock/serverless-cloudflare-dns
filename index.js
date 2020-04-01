@@ -1,3 +1,4 @@
+const R = require('ramda');
 const _ = require('lodash');
 const CloudFlare = require('./lib/cloudflare');
 
@@ -43,6 +44,13 @@ class ServerlessCloudFlarePlugin {
           list: {
             usage: 'list record set',
             lifecycleEvents: ['list'],
+            options: {
+              all: {
+                usage: 'List all records',
+                shortcut: 'A',
+                required: false,
+              },
+            },
           },
         },
       },
@@ -71,9 +79,8 @@ class ServerlessCloudFlarePlugin {
    * @param {object|string} entity to log
    */
   log(entity) {
-    this.serverless.cli.log(
-      LOG_PREFFIX + (_.isObject(entity) ? JSON.stringify(entity) : entity)
-    );
+    const str = R.when(R.is(Object), JSON.stringify, entity);
+    this.serverless.cli.log(`${LOG_PREFFIX} ${str}`);
   }
 
   /**
@@ -102,7 +109,9 @@ class ServerlessCloudFlarePlugin {
     if (val) return val;
 
     if (required && !defaultValue) {
-      throw new Error(`property value for ${key} is missing.`);
+      throw new Error(
+        `Property value for '${key}' is missing. Please, check your serverless.yml'`
+      );
     }
 
     return defaultValue;
@@ -127,10 +136,14 @@ class ServerlessCloudFlarePlugin {
 
     // OPTIONALS FIELDS
     record.type = this.getConfValue('cloudflare.record.type', false, 'CNAME');
-    record.proxied = this.getConfValue('cloudflare.record.proxied', false);
     record.proxiable = this.getConfValue('cloudflare.record.proxiable', false);
     record.priority = this.getConfValue('cloudflare.record.priority', false);
     record.ttl = this.getConfValue('cloudflare.record.ttl', false);
+    record.proxied = this.getConfValue(
+      'cloudflare.record.proxied',
+      false,
+      true
+    );
 
     this.cfg.auth = auth;
     this.cfg.record = record;
@@ -146,7 +159,7 @@ class ServerlessCloudFlarePlugin {
    * @returns {record} cloudflare object record
    */
   async create() {
-    this.log('Creating new record set');
+    this.log('Creating new record set...');
     const res = await this.CloudFlareApi.createDnsRecord(
       this.cfg.domain,
       this.cfg.record
@@ -160,7 +173,7 @@ class ServerlessCloudFlarePlugin {
    *
    */
   async remove() {
-    this.log('Removing record set');
+    this.log('Removing record set...');
     const record = await this.CloudFlareApi.removeDnsRecord(
       this.cfg.domain,
       this.cfg.record
@@ -174,7 +187,7 @@ class ServerlessCloudFlarePlugin {
    *
    */
   async update() {
-    this.log('Updating record set');
+    this.log('Updating record set...');
     const record = await this.CloudFlareApi.updateDnsRecord(
       this.cfg.domain,
       this.cfg.record
@@ -184,15 +197,19 @@ class ServerlessCloudFlarePlugin {
   }
 
   /**
-   * List records
+   * List record or use '-A' or 'all' flags
+   * to list all records.
    *
    */
   async list() {
-    this.log('Listing record set');
+    this.log('Fetching record set...');
 
     const q = {};
-    const records = await this.CloudFlareApi.listDnsRecord(this.cfg.domain, q);
+    if (!this.options.all) {
+      q.name = this.cfg.record.name;
+    }
 
+    const records = await this.CloudFlareApi.listDnsRecord(this.cfg.domain, q);
     this.log(records);
   }
 }
