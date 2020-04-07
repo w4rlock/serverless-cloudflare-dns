@@ -1,8 +1,10 @@
 ![serverless](http://public.serverless.com/badges/v3.svg)
+[![npm
+version](https://badge.fury.io/js/serverless-cloudflare-dns.svg)](https://badge.fury.io/js/serverless-cloudflare-dns)
 
 ## Installation
 ```bash
-npm i -E serverless-cloudflaredns-plugin
+npm i -E serverless-cloudflare-dns
 ```
 
 ## Usage
