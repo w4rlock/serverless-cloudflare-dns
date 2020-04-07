@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.1.8...0.2.0) (2020-04-07)
+
+
+### Features
+
+* add base class and refactor ([b5aaa16](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/b5aaa1682bca93313efb3aedb95f6abe39fba0f3))
+* add optional record to deploy, remove ([432d9dc](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/432d9dcabbe0b6a9ab2a1d0ed33f7be0b6e1ff74))
+
 ### [0.1.8](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.1.7...0.1.8) (2020-04-01)
 
 
