@@ -1,10 +1,12 @@
-const R = require('ramda');
-const _ = require('lodash');
-const CloudFlare = require('./lib/cloudflare');
+const BbPromise = require('bluebird');
+const BaseServerlessPlugin = require('base-serverless-plugin');
+const CloudFlare = require('cloudflare');
+const RecordCtl = require('./lib/controller/RecordController.js');
+const Commands = require('./lib/Commands');
 
-const LOG_PREFFIX = '[ServerlessCloudFlare] - ';
+const LOG_PREFFIX = '[ServerlessCloudFlare] -';
 
-class ServerlessCloudFlarePlugin {
+class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
   /**
    * Serverless plugin constructor
    *
@@ -12,205 +14,78 @@ class ServerlessCloudFlarePlugin {
    * @param {object} options command line arguments
    */
   constructor(serverless, options) {
-    this.serverless = serverless;
-    this.options = options;
+    super(serverless, options, LOG_PREFFIX, 'cloudflare');
 
     this.hooks = {
-      'after:deploy:deploy': this.actionw.bind(this, this.create),
-      'after:remove:remove': this.actionw.bind(this, this.remove),
-      'cloudflare:deploy:deploy': this.actionw.bind(this, this.create),
-      'cloudflare:update:update': this.actionw.bind(this, this.update),
-      'cloudflare:remove:remove': this.actionw.bind(this, this.remove),
-      'cloudflare:list:list': this.actionw.bind(this, this.list),
+      'after:deploy:deploy': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(() => this.RecordCtl.create())
+          .then(this.log),
+      'after:remove:remove': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(() => this.RecordCtl.remove())
+          .then(this.log),
+      'cloudflare:record:deploy:deploy': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(() => this.RecordCtl.create())
+          .then(this.log),
+      'cloudflare:record:update:update': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(() => this.RecordCtl.update())
+          .then(this.log),
+      'cloudflare:record:remove:remove': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(() => this.RecordCtl.remove())
+          .then(this.log),
+      'cloudflare:record:list:list': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(() => this.RecordCtl.list())
+          .then(this.log),
     };
 
-    this.commands = {
-      cloudflare: {
-        usage: 'cloud flare abm - record set',
-        lifecycleEvents: ['deploy', 'remove', 'update', 'list'],
-        commands: {
-          deploy: {
-            usage: 'create new record set',
-            lifecycleEvents: ['deploy'],
-          },
-          remove: {
-            usage: 'remove new record set',
-            lifecycleEvents: ['remove'],
-          },
-          update: {
-            usage: 'update new record set',
-            lifecycleEvents: ['update'],
-          },
-          list: {
-            usage: 'list record set',
-            lifecycleEvents: ['list'],
-            options: {
-              all: {
-                usage: 'List all records',
-                shortcut: 'A',
-                required: false,
-              },
-            },
-          },
-        },
-      },
-    };
+    this.commands = Commands;
   }
 
   /**
-   * actionw
-   *
-   * @param {function} funAction serverless plugin action
-   */
-  async actionw(funAction) {
-    const disabled = this.getConfValue('cloudflare.disabled', false, false);
-    if ((_.isBoolean(disabled) && disabled) || disabled === 'true') {
-      this.log('plugin is disabled');
-      return;
-    }
-
-    this.initialize();
-    await funAction.call(this);
-  }
-
-  /**
-   * Log to stdout
-   *
-   * @param {object|string} entity to log
-   */
-  log(entity) {
-    const str = R.when(R.is(Object), JSON.stringify, entity);
-    this.serverless.cli.log(`${LOG_PREFFIX} ${str}`);
-  }
-
-  /**
-   * Get multiprovider configuration
-   *
-   * @param {string} key configuration key
-   * @param {boolean} required=true if value is null throw a error
-   * @param {string|object} defaultValue=undefined default value to return
-   * @returns {string} configuration value
-   */
-  getConfValue(key, required = true, defaultValue = undefined) {
-    const fromEnv = (k) => process.env[k];
-    const fromCmdArg = (k) => this.options[k];
-    const fromYaml = (k) => _.get(this.serverless, `service.custom.${k}`);
-
-    let k = key.replace(/\./g, '-');
-    let val = fromCmdArg(k);
-    if (val) return val;
-
-    k = key.replace(/\./g, '_').toUpperCase();
-    val = fromEnv(k);
-    if (val) return val;
-
-    k = key;
-    val = fromYaml(k);
-    if (val) return val;
-
-    if (required && !defaultValue) {
-      throw new Error(
-        `Property value for '${key}' is missing. Please, check your serverless.yml'`
-      );
-    }
-
-    return defaultValue;
-  }
-
-  /**
-   * Initialize variables
+   * Initialize User config variables.
    *
    */
   initialize() {
-    const auth = {};
-    const record = {};
+    this.cfg = {
+      auth: {},
+      record: {},
+    };
 
-    this.cfg = {};
-    this.cfg.domain = this.getConfValue('cloudflare.domain');
+    this.cfg.domain = this.getConf('domain');
 
-    auth.email = this.getConfValue('cloudflare.auth.email');
-    auth.token = this.getConfValue('cloudflare.auth.token');
+    this.cfg.auth.email = this.getConf('auth.email');
+    this.cfg.auth.token = this.getConf('auth.token');
 
-    record.name = this.getConfValue('cloudflare.record.name');
-    record.content = this.getConfValue('cloudflare.record.content');
+    this.cfg.record.name = this.getConf('record.name');
+    this.cfg.record.content = this.getConf('record.content');
 
     // OPTIONALS FIELDS
-    record.type = this.getConfValue('cloudflare.record.type', false, 'CNAME');
-    record.proxiable = this.getConfValue('cloudflare.record.proxiable', false);
-    record.priority = this.getConfValue('cloudflare.record.priority', false);
-    record.ttl = this.getConfValue('cloudflare.record.ttl', false);
-    record.proxied = this.getConfValue(
-      'cloudflare.record.proxied',
-      false,
-      true
-    );
+    this.cfg.record.type = this.getConf('record.type', false, 'CNAME');
+    this.cfg.record.priority = this.getConf('record.priority', false);
+    this.cfg.record.ttl = this.getConf('record.ttl', false);
+    this.cfg.record.proxied = this.getConf('record.proxied', false, true);
+    this.cfg.record.proxiable = this.getConf('record.proxiable', false, true);
 
-    this.cfg.auth = auth;
-    this.cfg.record = record;
-    this.CloudFlareApi = new CloudFlare(
-      this.cfg.auth.email,
-      this.cfg.auth.token
-    );
-  }
+    this.CloudFlare = new CloudFlare({
+      email: this.cfg.auth.email,
+      key: this.cfg.auth.token,
+    });
 
-  /**
-   * Create a new cloudflare record if not exist (check for cname to validate)
-   *
-   * @returns {record} cloudflare object record
-   */
-  async create() {
-    this.log('Creating new record set...');
-    const res = await this.CloudFlareApi.createDnsRecord(
-      this.cfg.domain,
-      this.cfg.record
-    );
+    const ctx = this;
+    this.RecordCtl = new RecordCtl(ctx);
 
-    this.log(res);
-  }
-
-  /**
-   * Remove cloud flare record set based on cname field to remove
-   *
-   */
-  async remove() {
-    this.log('Removing record set...');
-    const record = await this.CloudFlareApi.removeDnsRecord(
-      this.cfg.domain,
-      this.cfg.record
-    );
-
-    this.log(record);
-  }
-
-  /**
-   * Update cloud flare record set based on cname field to update
-   *
-   */
-  async update() {
-    this.log('Updating record set...');
-    const record = await this.CloudFlareApi.updateDnsRecord(
-      this.cfg.domain,
-      this.cfg.record
-    );
-
-    this.log(record);
-  }
-
-  /**
-   * List record or use '-A' or 'all' flags
-   * to list all records.
-   *
-   */
-  async list() {
-    this.log('Fetching record set...');
-
-    const q = {};
-    if (!this.options.all) {
-      q.name = this.cfg.record.name;
-    }
-
-    const records = await this.CloudFlareApi.listDnsRecord(this.cfg.domain, q);
-    this.log(records);
+    return BbPromise.resolve();
   }
 }
 

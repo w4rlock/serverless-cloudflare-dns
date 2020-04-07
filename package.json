@@ -35,6 +35,8 @@
   },
   "homepage": "https://github.com/w4rlock/serverless-cloudflaredns-plugin#readme",
   "dependencies": {
+    "base-serverless-plugin": "0.1.1",
+    "bluebird": "3.7.2",
     "cloudflare": "^2.7.0",
     "lodash": "^4.17.15",
     "ramda": "^0.27.0"
