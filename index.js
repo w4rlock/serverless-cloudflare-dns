@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const BbPromise = require('bluebird');
 const BaseServerlessPlugin = require('base-serverless-plugin');
 const CloudFlare = require('cloudflare');
@@ -67,15 +68,19 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
     this.cfg.auth.email = this.getConf('auth.email');
     this.cfg.auth.token = this.getConf('auth.token');
 
-    this.cfg.record.name = this.getConf('record.name');
-    this.cfg.record.content = this.getConf('record.content');
+    // if declared tag record validate
+    const record = this.getConf('record', false, {});
+    if (!_.isEmpty(record)) {
+      this.cfg.record.name = this.getConf('record.name');
+      this.cfg.record.content = this.getConf('record.content');
 
-    // OPTIONALS FIELDS
-    this.cfg.record.type = this.getConf('record.type', false, 'CNAME');
-    this.cfg.record.priority = this.getConf('record.priority', false);
-    this.cfg.record.ttl = this.getConf('record.ttl', false);
-    this.cfg.record.proxied = this.getConf('record.proxied', false, true);
-    this.cfg.record.proxiable = this.getConf('record.proxiable', false, true);
+      // OPTIONALS FIELDS
+      this.cfg.record.type = this.getConf('record.type', false, 'CNAME');
+      this.cfg.record.priority = this.getConf('record.priority', false);
+      this.cfg.record.ttl = this.getConf('record.ttl', false);
+      this.cfg.record.proxied = this.getConf('record.proxied', false, true);
+      this.cfg.record.proxiable = this.getConf('record.proxiable', false, true);
+    }
 
     this.CloudFlare = new CloudFlare({
       email: this.cfg.auth.email,
