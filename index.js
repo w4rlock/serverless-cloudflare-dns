@@ -5,6 +5,8 @@ const CloudFlare = require('cloudflare');
 const RecordCtl = require('./lib/controller/RecordController.js');
 const Commands = require('./lib/Commands');
 
+
+
 const LOG_PREFFIX = '[ServerlessCloudFlare] -';
 
 class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
