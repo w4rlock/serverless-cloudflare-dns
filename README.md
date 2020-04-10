@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="CloudFlare" src="https://user-images.githubusercontent.com/621906/78958671-2ec18c80-7abf-11ea-9893-937c2321789f.jpg">
+  <img alt="CloudFlare" src="https://user-images.githubusercontent.com/621906/78959170-7e548800-7ac0-11ea-8baa-5c425cdc35e2.png">
 </p>
 
 
