@@ -15,9 +15,13 @@ version](https://badge.fury.io/js/serverless-cloudflare-dns.svg)](https://badge.
 ```bash
 npm i -E serverless-cloudflare-dns
 ```
-
+## Features
+```yaml
+- Create record when "serverless deploy" command is executed.
+- Remove record when "serverless remove" command is executed.
+- Command Line Support for c.r.u.d. operations. 
+```
 ## Usage
-
 ```yaml
 plugins:
   - serverless-cloudflare-dns
@@ -42,6 +46,7 @@ custom:
 
 ## Command Line support
 ```bash
+$ sls cloudflare --help
 $ sls cloudflare record deploy
 $ sls cloudflare record update
 $ sls cloudflare record remove
