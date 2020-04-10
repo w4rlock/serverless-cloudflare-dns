@@ -1,6 +1,13 @@
+<p align="center">
+  <img alt="CloudFlare" src="https://user-images.githubusercontent.com/621906/78958671-2ec18c80-7abf-11ea-9893-937c2321789f.jpg">
+</p>
+
+
+
 ![serverless](http://public.serverless.com/badges/v3.svg)
 [![npm
 version](https://badge.fury.io/js/serverless-cloudflare-dns.svg)](https://badge.fury.io/js/serverless-cloudflare-dns)
+
 
 
 
@@ -17,19 +24,19 @@ plugins:
 
 custom:
   cloudflare:
-    disabled: false
-    domain: ""
+    disabled: false               # Optional: disabled this plugin
+    domain: ""                    # Required: your.corp.domain
 
     auth:
-      email: ""
-      token: ""
+      email: ""                   # Required: use aws ssm or something like that
+      token: ""                   # Required: use aws ssm or something like that
 
     record:
-      name: ""
-      content: ""
-      type: ""                    # Optional, default = CNAME
-      proxied: ""                 # Optional, default = true
-      proxiable: ""               # Optional, default = true
+      name: ""                    # Required: subdomain.your.corp.domain
+      content: ""                 # Required: domain.to.redirect
+      type: ""                    # Optional: default = CNAME
+      proxied: ""                 # Optional: default = true
+      proxiable: ""               # Optional: default = true
 ```
 
 
