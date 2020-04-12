@@ -24,19 +24,19 @@ plugins:
 
 custom:
   cloudflare:
-    disabled: false               # Optional: disabled this plugin
-    domain: ""                    # Required: your.corp.domain
+    disabled: false               # Optional, disabled this plugin
+    domain: ""                    # Required, your.corp.domain
 
     auth:
-      email: ""                   # Required: use aws ssm or something like that
-      token: ""                   # Required: use aws ssm or something like that
+      email: ""                   # Required, use aws ssm or something like that
+      token: ""                   # Required, use aws ssm or something like that
 
     record:
-      name: ""                    # Required: subdomain.your.corp.domain
-      content: ""                 # Required: domain.to.redirect
-      type: ""                    # Optional: default = CNAME
-      proxied: ""                 # Optional: default = true
-      proxiable: ""               # Optional: default = true
+      name: ""                    # Required, subdomain.your.corp.domain
+      content: ""                 # Required, domain.to.redirect
+      type: ""                    # Optional, default = CNAME
+      proxied: ""                 # Optional, default = true
+      proxiable: ""               # Optional, default = true
 ```
 
 
