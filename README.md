@@ -18,8 +18,10 @@ npm i -E serverless-cloudflare-dns
 ```
 ## Features
 ```yaml
-- Create record when "serverless deploy" command is executed.
-- Remove record when "serverless remove" command is executed.
+- Auth with api token.
+- Auth with email and key.
+- Create record on 'serverless deploy'.
+- Remove record on 'serverless remove'.
 - Command Line Support for c.r.u.d. operations.
 ```
 ## Usage
