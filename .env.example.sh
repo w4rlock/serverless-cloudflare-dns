@@ -1,6 +1,8 @@
 ################################################
-export CLOUDFLARE_AUTH_EMAIL='*****@gmail.com'
-export CLOUDFLARE_AUTH_TOKEN='****************'
+#export CLOUDFLARE_AUTH_EMAIL='*****@gmail.com'
+#export CLOUDFLARE_AUTH_KEY='****************'
+# OR
+export CLOUDFLARE_AUTH_APITOKEN='****************************************'
 
 export CLOUDFLARE_DOMAIN='somedomain.com'
 export CLOUDFLARE_RECORD_NAME='vim.somedomain.com'

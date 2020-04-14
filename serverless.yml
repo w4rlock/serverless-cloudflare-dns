@@ -13,8 +13,12 @@ custom:
     disabled: false
     domain: "" # from env
     auth:
-      email: "" # from env
-      token: "" # from env
+      # option 1
+      # email: "" # from env
+      # key: "" # from env
+
+      # option 2
+      # apiToken: ""
 
     record:
       name: ""

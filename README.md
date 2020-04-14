@@ -20,7 +20,7 @@ npm i -E serverless-cloudflare-dns
 ```yaml
 - Create record when "serverless deploy" command is executed.
 - Remove record when "serverless remove" command is executed.
-- Command Line Support for c.r.u.d. operations. 
+- Command Line Support for c.r.u.d. operations.
 ```
 ## Usage
 ```yaml
@@ -33,8 +33,12 @@ custom:
     domain: ""                    # Required, your.corp.domain
 
     auth:
-      email: ""                   # Required, use aws ssm or something like that
-      token: ""                   # Required, use aws ssm or something like that
+      # Option 1
+      # email: ""                 # Required, use aws ssm or something like that
+      # key: ""                   # Required, use aws ssm or something like that
+
+      # Option 2
+      # apiToken: ""              # Required, use aws ssm or something like that
 
     record:
       name: ""                    # Required, subdomain.your.corp.domain
