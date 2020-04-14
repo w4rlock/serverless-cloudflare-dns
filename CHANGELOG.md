@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.3.0...0.4.0) (2020-04-14)
+
+
+### Features
+
+* add auth by api token ([c040f93](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/c040f93361ce7a6216e918311155831a45e14cf0))
+
+
+### Bug Fixes
+
+* add more doc ([747cf4e](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/747cf4e92893ad3b4b9339e2308a44d4fa7a5587))
+* remove comma ([da46c41](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/da46c41f7957e195c7b3f1dc5ab07d84134ad8d0))
+
 ## [0.3.0](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.2.0...0.3.0) (2020-04-08)
 
 
