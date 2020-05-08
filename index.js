@@ -63,26 +63,29 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
       record: {},
     };
 
+    // you can disable the serverless lifecycle events
+    this.cfg.autoDeploy = this.getConf('autoDeploy', true);
+    this.cfg.autoRemove = this.getConf('autoRemove', true);
+
     this.cfg.domain = this.getConf('domain');
 
-    this.cfg.auth.key = this.getConf('auth.key', false);
-    this.cfg.auth.email = this.getConf('auth.email', false);
-    this.cfg.auth.apiToken = this.getConf('auth.apiToken', false);
-
+    this.cfg.auth.key = this.getConf('auth.key', undefined);
+    this.cfg.auth.email = this.getConf('auth.email', undefined);
+    this.cfg.auth.apiToken = this.getConf('auth.apiToken', undefined);
     this.validateCredentials();
 
-    const record = this.getConf('record', false, {});
+    const record = this.getConf('record', {});
     if (!_.isEmpty(record)) {
       // REQUIRED FIELDS
       this.cfg.record.name = this.getConf('record.name');
       this.cfg.record.content = this.getConf('record.content');
 
       // OPTIONALS FIELDS
-      this.cfg.record.type = this.getConf('record.type', false, 'CNAME');
-      this.cfg.record.priority = this.getConf('record.priority', false);
-      this.cfg.record.proxied = this.getConf('record.proxied', false, true);
-      this.cfg.record.proxiable = this.getConf('record.proxiable', false, true);
-      this.cfg.record.ttl = this.getConf('record.ttl', false);
+      this.cfg.record.type = this.getConf('record.type', 'CNAME');
+      this.cfg.record.priority = this.getConf('record.priority', undefined);
+      this.cfg.record.proxied = this.getConf('record.proxied', true);
+      this.cfg.record.proxiable = this.getConf('record.proxiable', true);
+      this.cfg.record.ttl = this.getConf('record.ttl', undefined);
     }
 
     this.CloudFlare = new CloudFlare({
