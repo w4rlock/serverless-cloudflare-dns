@@ -1,6 +1,6 @@
 {
   "name": "serverless-cloudflare-dns",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Serverless CloudFlare Plugin",
   "main": "index.js",
   "scripts": {
