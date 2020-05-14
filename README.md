@@ -70,16 +70,16 @@ $ sls cloudflare record list -A
 
 ## Flow
 ```yaml
-Deploy Flow: 
--if record does not exists => Create Record()
--if old cname content not equals to current  => Update Record()
+DEPLOY: 
+- if record does not exists => Create Record()
+- if old cname content not equals to current  => Update Record()
 - if record exists => show message(): CF_RECORD_EXISTENT
 
-Update Flow:
+UPDATE:
 - if record exists => Update Record()
 - else => show message(): CF_RECORD_NOT_FOUND
 
-Remove Flow:
+REMOVE:
 - if record exists => Remove Record()
 - else => show message(): CF_RECORD_NOT_FOUND
 ```
