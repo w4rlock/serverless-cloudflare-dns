@@ -27,7 +27,7 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
         BbPromise.bind(this)
           .then(this.initialize)
           .then(this.resolveCnameValue)
-          .then(() => this.RecordCtl.create())
+          .then(() => this.RecordCtl.createOrUpdate())
           .then(this.log),
       'after:remove:remove': () =>
         BbPromise.bind(this)
@@ -38,7 +38,7 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
         BbPromise.bind(this)
           .then(this.initialize)
           .then(this.resolveCnameValue)
-          .then(() => this.RecordCtl.create())
+          .then(() => this.RecordCtl.createOrUpdate())
           .then(this.log),
       'cloudflare:record:update:update': () =>
         BbPromise.bind(this)

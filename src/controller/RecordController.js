@@ -20,24 +20,47 @@ class RecordController {
   /**
    *
    * Create dns record set
+   * TODO: if record cname does not exist => CREATE
+   * if exist and content are not equals => UPDATE
+   * else RECORD_EXIST
    *
    * @returns {record} cloudflare object record
    */
-  async create() {
+  async createOrUpdate() {
     const { domain, record } = this.ctx.cfg;
 
     if (!RecordController.validate(record)) return '';
 
+    let result = '';
     const zoneId = await this.zoneService.getZoneId(domain);
-    let result = await this.recordService.getDnsRecord(zoneId, record);
+    const oldRecord = await this.recordService.getDnsRecord(zoneId, record);
+    const id = _.get(oldRecord, 'id');
+    const oldContent = _.get(oldRecord, 'content');
 
-    if (_.isEmpty(result, 'id')) {
+    const create = async () => {
       try {
-        result = await this.recordService.create(zoneId, record);
-        result = this.ifArrayGetFirst(result);
+        const res = await this.recordService.create(zoneId, record);
+        return this.ifArrayGetFirst(res);
       } catch (error) {
         throw new Error(`CloudFlare unable to create dns record set: ${error}`);
       }
+    };
+
+    const update = async () => {
+      try {
+        const res = await this.recordService.update(zoneId, id, record);
+        return this.ifArrayGetFirst(res);
+      } catch (error) {
+        throw new Error(
+          `CloudFlare unable to update dns record content: ${error}`
+        );
+      }
+    };
+
+    if (_.isEmpty(id)) {
+      result = await create();
+    } else if (oldContent !== record.content) {
+      result = await update();
     } else {
       result = 'CF_RECORD_EXISTENT';
     }
@@ -77,7 +100,6 @@ class RecordController {
    *
    * Update dns record set
    * NOTE: the old record is searched by 'name' field
-   *
    *
    */
   async update() {
