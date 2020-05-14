@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.4](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.4.3...0.4.4) (2020-05-14)
+
+
+### Features
+
+* add variable resolver for cloudformation ([fd6cb7c](https://github.com/w4rlock/serverless-cloudflaredns-plugin/commit/fd6cb7c79733662f974dc133dda732d6be8d085e))
+
 ### [0.4.3](https://github.com/w4rlock/serverless-cloudflaredns-plugin/compare/0.4.2...0.4.3) (2020-05-08)
 
 
