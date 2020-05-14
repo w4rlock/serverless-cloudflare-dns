@@ -29,6 +29,8 @@ npm i -E serverless-cloudflare-dns
 ```
 ## Usage
 ```yaml
+# serverless.yml 
+
 plugins:
   - serverless-cloudflare-dns
 
