@@ -2,8 +2,8 @@ const _ = require('lodash');
 const BbPromise = require('bluebird');
 const BaseServerlessPlugin = require('base-serverless-plugin');
 const CloudFlare = require('cloudflare');
-const RecordCtl = require('./lib/controller/RecordController.js');
-const Commands = require('./lib/Commands');
+const RecordCtl = require('./src/controller/RecordController.js');
+const Commands = require('./src/Commands');
 
 const LOG_PREFFIX = '[ServerlessCloudFlare] -';
 
@@ -18,9 +18,15 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
     super(serverless, options, LOG_PREFFIX, 'cloudflare');
 
     this.hooks = {
+      'info:info': () =>
+        BbPromise.bind(this)
+          .then(this.initialize)
+          .then(() => this.RecordCtl.list())
+          .then(this.log),
       'after:deploy:deploy': () =>
         BbPromise.bind(this)
           .then(this.initialize)
+          .then(this.resolveCnameValue)
           .then(() => this.RecordCtl.create())
           .then(this.log),
       'after:remove:remove': () =>
@@ -31,11 +37,13 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
       'cloudflare:record:deploy:deploy': () =>
         BbPromise.bind(this)
           .then(this.initialize)
+          .then(this.resolveCnameValue)
           .then(() => this.RecordCtl.create())
           .then(this.log),
       'cloudflare:record:update:update': () =>
         BbPromise.bind(this)
           .then(this.initialize)
+          .then(this.resolveCnameValue)
           .then(() => this.RecordCtl.update())
           .then(this.log),
       'cloudflare:record:remove:remove': () =>
@@ -96,6 +104,47 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
 
     const ctx = this;
     this.RecordCtl = new RecordCtl(ctx);
+
+    return BbPromise.resolve();
+  }
+
+  /**
+   * Resolve Cloud Formation Record Content useful for CloudFront (dinamic domain)
+   *
+   * @returns {Promise} Domain value
+   */
+  async resolveCnameValue() {
+    const expr = _.get(this.cfg, 'record.content');
+    const re = new RegExp(/^#\{cf:(.*)}/);
+
+    if (!_.isEmpty(expr) && expr.startsWith('#{')) {
+      const cfMatch = expr.match(re);
+
+      if (_.isEmpty(cfMatch) || cfMatch.length < 2) {
+        let msg = '';
+        msg += 'CLOUD_FLARE_CONFIG: Invalid Variable Syntax for ';
+        msg += '"CloudFormation" resolver... Should be #{cf:SomeOutputKey}. ';
+        throw new Error(msg);
+      }
+
+      const [, targetKey] = cfMatch;
+      const aws = this.serverless.getProvider('aws');
+      const q = { StackName: this.getStackName() };
+      const res = await aws.request('CloudFormation', 'describeStacks', q, {});
+
+      const allOutputs = _.get(res, 'Stacks[0].Outputs', []);
+      const outFounds = allOutputs.filter((out) => out.OutputKey === targetKey);
+
+      if (_.isEmpty(outFounds) || outFounds.length < 1) {
+        let msg = '';
+        msg += 'CLOUD_FLARE_KEY_NOT_FOUND: CloudFormation key not found ';
+        msg += `'${targetKey}'.. `;
+
+        throw new Error(msg);
+      }
+
+      _.set(this.cfg, 'record.content', outFounds[0].OutputValue);
+    }
 
     return BbPromise.resolve();
   }

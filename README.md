@@ -20,6 +20,9 @@ npm i -E serverless-cloudflare-dns
 ```yaml
 - Auth with api token.
 - Auth with email and key.
+
+- Record Content Resolver. (useful for CloudFront)
+
 - Create record on 'serverless deploy'.
 - Remove record on 'serverless remove'.
 - Command Line Support for c.r.u.d. operations.
@@ -31,23 +34,26 @@ plugins:
 
 custom:
   cloudflare:
-    disabled: false               # Optional, disabled this plugin
-    domain: ""                    # Required, your.corp.domain
+    disabled: false                   # Optional, disabled this plugin
+    domain: ""                        # Required, your.corp.domain
 
     auth:
       # Option 1
-      # email: ""                 # Required, use aws ssm or something like that
-      # key: ""                   # Required, use aws ssm or something like that
+      # email: ""                     # Required, use aws ssm or something like that
+      # key: ""                       # Required, use aws ssm or something like that
 
       # Option 2
-      # apiToken: ""              # Required, use aws ssm or something like that
+      # apiToken: ""                  # Required, use aws ssm or something like that
 
     record:
-      name: ""                    # Required, subdomain.your.corp.domain
-      content: ""                 # Required, domain.to.redirect
-      type: ""                    # Optional, default = CNAME
-      proxied: ""                 # Optional, default = true
-      proxiable: ""               # Optional, default = true
+      name: ""                        # Required, subdomain.your.corp.domain
+
+      content: "miapp.com"            # Required, domain.to.redirect
+      content: "#{cf:SomeOutput}"     # CloudFormation Output Key.
+
+      type: ""                        # Optional, default = CNAME
+      proxied: ""                     # Optional, default = true
+      proxiable: ""                   # Optional, default = true
 ```
 
 
@@ -58,5 +64,5 @@ $ sls cloudflare record deploy
 $ sls cloudflare record update
 $ sls cloudflare record remove
 $ sls cloudflare record list
-$ sls cloudflare record list --all
+$ sls cloudflare record list -A
 ```

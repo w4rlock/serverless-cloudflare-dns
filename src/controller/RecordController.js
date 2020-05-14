@@ -113,7 +113,7 @@ class RecordController {
     const { domain, record } = this.ctx.cfg;
     const query = {};
 
-    if (!_.get(this, 'ctx.options.all')) {
+    if (!_.get(this, 'ctx.options.A')) {
       query.name = record.name;
     }
 

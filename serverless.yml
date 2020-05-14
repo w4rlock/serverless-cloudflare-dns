@@ -1,4 +1,4 @@
-service: test-cloudflare-plugin
+service: SlsCloudFlarePluginTest
 
 provider:
   name: aws
@@ -14,12 +14,14 @@ custom:
     domain: "" # from env
     auth:
       # option 1
-      # email: "" # from env
-      # key: "" # from env
+      email: "" # from env
+      token: "" # from env
 
       # option 2
-      # apiToken: ""
+      apiToken: ""
 
     record:
       name: ""
       content: ""
+      #content: "#{cf:CloudFrontDomain}"
+
