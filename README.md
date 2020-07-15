@@ -8,6 +8,8 @@
 [![npm
 version](https://badge.fury.io/js/serverless-cloudflare-dns.svg)](https://badge.fury.io/js/serverless-cloudflare-dns)
 [![npm downloads](https://img.shields.io/npm/dt/serverless-cloudflare-dns.svg?style=flat)](https://www.npmjs.com/package/serverless-cloudflare-dns)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=278YCRJXTXLXJ)
+
 
 
 
