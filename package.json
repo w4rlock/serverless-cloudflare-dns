@@ -38,9 +38,8 @@
     "base-serverless-plugin": "0.3.3",
     "bluebird": "3.7.2",
     "cloudflare": "2.7.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "ramda": "0.27.0",
-    "rm": "^0.1.8",
     "standard-version": "8.0.2"
   },
   "devDependencies": {
