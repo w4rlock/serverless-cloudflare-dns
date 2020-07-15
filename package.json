@@ -35,12 +35,13 @@
   },
   "homepage": "https://github.com/w4rlock/serverless-cloudflaredns-plugin#readme",
   "dependencies": {
-    "base-serverless-plugin": "0.1.7",
+    "base-serverless-plugin": "0.3.3",
     "bluebird": "3.7.2",
     "cloudflare": "2.7.0",
     "lodash": "4.17.15",
     "ramda": "0.27.0",
-    "rm": "^0.1.8"
+    "rm": "^0.1.8",
+    "standard-version": "8.0.2"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^8.3.4",
@@ -55,7 +56,6 @@
     "eslint-plugin-react": "^7.19.0",
     "husky": "^4.2.3",
     "lint-staged": "^10.0.8",
-    "prettier": "^2.0.1",
-    "standard-version": "^7.1.0"
+    "prettier": "^2.0.1"
   }
 }

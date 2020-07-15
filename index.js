@@ -22,40 +22,47 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
         BbPromise.bind(this)
           .then(this.initialize)
           .then(() => this.RecordCtl.list())
-          .then(this.log),
+          .then(this.log)
+          .catch(_.identity),
       'after:deploy:deploy': () =>
         BbPromise.bind(this)
           .then(this.initialize)
           .then(this.resolveCnameValue)
           .then(() => this.RecordCtl.createOrUpdate())
-          .then(this.log),
+          .then(this.log)
+          .catch(_.identity),
       'after:remove:remove': () =>
         BbPromise.bind(this)
           .then(this.initialize)
           .then(() => this.RecordCtl.remove())
-          .then(this.log),
+          .then(this.log)
+          .catch(_.identity),
       'cloudflare:record:deploy:deploy': () =>
         BbPromise.bind(this)
           .then(this.initialize)
           .then(this.resolveCnameValue)
           .then(() => this.RecordCtl.createOrUpdate())
-          .then(this.log),
+          .then(this.log)
+          .catch(_.identity),
       'cloudflare:record:update:update': () =>
         BbPromise.bind(this)
           .then(this.initialize)
           .then(this.resolveCnameValue)
           .then(() => this.RecordCtl.update())
-          .then(this.log),
+          .then(this.log)
+          .catch(_.identity),
       'cloudflare:record:remove:remove': () =>
         BbPromise.bind(this)
           .then(this.initialize)
           .then(() => this.RecordCtl.remove())
-          .then(this.log),
+          .then(this.log)
+          .catch(_.identity),
       'cloudflare:record:list:list': () =>
         BbPromise.bind(this)
           .then(this.initialize)
           .then(() => this.RecordCtl.list())
-          .then(this.log),
+          .then(this.log)
+          .catch(_.identity),
     };
 
     this.commands = Commands;
@@ -66,6 +73,11 @@ class ServerlessCloudFlarePlugin extends BaseServerlessPlugin {
    *
    */
   initialize() {
+    if (this.isPluginDisabled()) {
+      this.log('warning: plugin is disabled');
+      return Promise.reject(new Error('PLUGIN_DISABLED'));
+    }
+
     this.cfg = {
       auth: {},
       record: {},

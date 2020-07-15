@@ -10,7 +10,7 @@ plugins:
 
 custom:
   cloudflare:
-    disabled: false
+    disabled: true
     domain: "" # from env
     auth:
       # option 1
